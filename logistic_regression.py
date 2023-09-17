@@ -10,7 +10,7 @@ from random import Random
 
 #TODO delete me
 import textblob
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import vaderSentiment
 
 '''
 Computes the logistic function.
@@ -62,9 +62,8 @@ class LogisticRegression():
                     else:
                         classes[name] = self.class_dict[re.findall(r'test\\(.*)', c)[0]]                    
 
-                    document_not_split = f.read()
                     words = f.read().split()
-                    documents[name] = self.featurize(words, document_not_split)
+                    documents[name] = self.featurize(words)
 
                     # END STUDENT CODE
         return filenames, classes, documents
@@ -77,7 +76,7 @@ class LogisticRegression():
     #some idea features you can use:
     #count of vowels
     #count of curse words
-    def featurize(self, document, document_not_split):
+    def featurize(self, document):
         vector = np.zeros(self.n_features + 1)
         # BEGIN STUDENT CODE
 
@@ -86,19 +85,6 @@ class LogisticRegression():
         vector[0] = self.count_negative_curse_words(document)
         vector[1] = self.count_positive_words(document)
         # vector[2] = self.count_exclamation_marks(document)
-
-
-        # blob = textblob.TextBlob(document_not_split)
-        # b_sentiment = blob.sentiment
-        # vector[2] = b_sentiment.polarity
-        # vector[3] = b_sentiment.subjectivity
-
-
-        # vader = SentimentIntensityAnalyzer()
-        # v_sentiment = vader.polarity_scores(document_not_split)
-        # vector[4] = v_sentiment['neg']
-        # vector[5] = v_sentiment['neu']
-        # vector[6] = v_sentiment['pos']
 
 
         # END STUDENT CODE
@@ -142,6 +128,7 @@ class LogisticRegression():
     
 
 
+
     '''
     Trains a logistic regression classifier on a training set.
     '''
@@ -158,6 +145,8 @@ class LogisticRegression():
                 minibatch = filenames[i * batch_size: (i + 1) * batch_size]
 
                 # BEGIN STUDENT CODE
+
+
                 # create and fill in matrix x and vector y
 
                 # for my x matrix, it should be len(minibatch) x self.n_features + 1 (a.k.a., (m, F + 1))
@@ -169,14 +158,25 @@ class LogisticRegression():
                     y_vector[i] = classes[minibatch[i]]
 
 
+
                 # compute y_hat
-                y_hat = sigma(np.dot(x_matrix, self.theta))
+                sigma_input = np.dot(x_matrix, self.theta)
+                y_hat = sigma(sigma_input)
+
+
 
                 # update loss
-                loss += -(np.dot(y_vector, np.log(y_hat)) + np.dot((1 - y_vector), np.log(1 - y_hat)))
+                first_log_term = np.dot(y_vector, np.log(y_hat))
+                second_log_term = np.dot((1 - y_vector), np.log(1 - y_hat))
+                loss += -(first_log_term + second_log_term)
+                # loss += -(y_vector*np.log(y_hat) + (1 - y_vector)*np.log(1 - y_hat))
+
+
 
                 # compute gradient
-                ave_grad = (np.dot(x_matrix.transpose(), (y_hat - y_vector))) / len(minibatch)
+                grad = (np.dot(x_matrix.transpose(), (y_hat - y_vector)))
+                ave_grad = grad / len(minibatch)
+
 
                 # update weights (and bias)
                 self.theta = self.theta - (eta*ave_grad)
@@ -202,7 +202,8 @@ class LogisticRegression():
             # BEGIN STUDENT CODE
             # get most likely class (recall that P(y=1|x) = y_hat)
 
-            y_hat = sigma(np.dot(documents[name], self.theta))
+            sigma_input = np.dot(documents[name], self.theta)
+            y_hat = sigma(sigma_input)
 
             results[name]['correct'] = classes[name]
             if (y_hat > 0.5):
@@ -210,12 +211,11 @@ class LogisticRegression():
             else:
                 results[name]['predicted'] = 0
 
+
             if results[name]['correct'] == results[name]['predicted']:
                 count_correct += 1
-
-        print("Percentage correct: {}%".format(100 * (count_correct / len(filenames))))
-
             # END STUDENT CODE
+        print("Percentage correct: {}%".format(100 * (count_correct / len(filenames))))
 
         return results
 
@@ -234,7 +234,7 @@ if __name__ == '__main__':
     lr = LogisticRegression(n_features=2)
     # make sure these point to the right directories
     #lr.train('movie_reviews/train', batch_size=3, n_epochs=1, eta=0.1)
-    lr.train('movie_reviews/train', batch_size=3, n_epochs=200, eta=1E-5)
+    lr.train('movie_reviews/train', batch_size=3, n_epochs=50, eta=1E-1)
     results = lr.test('movie_reviews/dev')
     # results = lr.test('movie_reviews/test')
     lr.evaluate(results)
