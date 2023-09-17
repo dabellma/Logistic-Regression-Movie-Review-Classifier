@@ -21,7 +21,7 @@ def sigma(z):
 class LogisticRegression():
 
     def __init__(self, n_features):
-
+        print("hello!")
         # be sure to use the right class_dict for each data set
         self.class_dict = {'neg': 0, 'pos': 1}
         # use of self.feature_dict is optional for this assignment
