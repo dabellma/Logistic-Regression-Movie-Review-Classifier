@@ -10,7 +10,7 @@ from random import Random
 
 #TODO delete me
 import textblob
-import vaderSentiment
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 '''
 Computes the logistic function.
@@ -62,8 +62,9 @@ class LogisticRegression():
                     else:
                         classes[name] = self.class_dict[re.findall(r'test\\(.*)', c)[0]]                    
 
+                    document_not_split = f.read()
                     words = f.read().split()
-                    documents[name] = self.featurize(words)
+                    documents[name] = self.featurize(words, document_not_split)
 
                     # END STUDENT CODE
         return filenames, classes, documents
@@ -76,7 +77,7 @@ class LogisticRegression():
     #some idea features you can use:
     #count of vowels
     #count of curse words
-    def featurize(self, document):
+    def featurize(self, document, document_not_split):
         vector = np.zeros(self.n_features + 1)
         # BEGIN STUDENT CODE
 
@@ -85,6 +86,23 @@ class LogisticRegression():
         vector[0] = self.count_negative_curse_words(document)
         vector[1] = self.count_positive_words(document)
         # vector[2] = self.count_exclamation_marks(document)
+
+
+
+        blob = textblob.TextBlob(document_not_split)
+        b_sentiment = blob.sentiment
+        vector[2] = b_sentiment.polarity
+        vector[3] = b_sentiment.subjectivity
+
+
+
+        vader = SentimentIntensityAnalyzer()
+        v_sentiment = vader.polarity_scores(document_not_split)
+        vector[4] = v_sentiment['neg']
+        vector[5] = v_sentiment['neu']
+        vector[6] = v_sentiment['pos']
+
+
 
 
         # END STUDENT CODE
@@ -231,10 +249,10 @@ class LogisticRegression():
 
 if __name__ == '__main__':
 
-    lr = LogisticRegression(n_features=2)
+    lr = LogisticRegression(n_features=6)
     # make sure these point to the right directories
     #lr.train('movie_reviews/train', batch_size=3, n_epochs=1, eta=0.1)
-    lr.train('movie_reviews/train', batch_size=3, n_epochs=50, eta=1E-1)
+    lr.train('movie_reviews/dev', batch_size=3, n_epochs=20, eta=1E-2)
     results = lr.test('movie_reviews/dev')
     # results = lr.test('movie_reviews/test')
     lr.evaluate(results)
