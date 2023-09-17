@@ -75,6 +75,8 @@ class LogisticRegression():
     #some idea features you can use:
     #count of vowels
     #count of curse words
+    #TODO consider also using feature_dict to get higher than 60.5%
+    #binary word features
     def featurize(self, document):
         vector = np.zeros(self.n_features + 1)
         # BEGIN STUDENT CODE
