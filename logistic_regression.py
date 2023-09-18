@@ -149,7 +149,6 @@ class LogisticRegression():
 
 
                 # create and fill in matrix x and vector y
-
                 # for my x matrix, it should be len(minibatch) x self.n_features + 1 (a.k.a., (m, F + 1))
                 # for my y matrix, it should be an array of len(minibatch) (a.k.a, (m,))
                 x_matrix = np.zeros((len(minibatch), self.n_features + 1))
@@ -158,26 +157,14 @@ class LogisticRegression():
                     x_matrix[i] = documents[minibatch[i]]
                     y_vector[i] = classes[minibatch[i]]
 
-
-
                 # compute y_hat
-                sigma_input = np.dot(x_matrix, self.theta)
-                y_hat = sigma(sigma_input)
-
-
+                y_hat = sigma(np.dot(x_matrix, self.theta))
 
                 # update loss
-                first_log_term = np.dot(y_vector, np.log(y_hat))
-                second_log_term = np.dot((1 - y_vector), np.log(1 - y_hat))
-                loss += -(first_log_term + second_log_term)
-                # loss += -(y_vector*np.log(y_hat) + (1 - y_vector)*np.log(1 - y_hat))
-
-
+                loss += -(np.dot(y_vector, np.log(y_hat)) + np.dot((1 - y_vector), np.log(1 - y_hat)))
 
                 # compute gradient
-                grad = (np.dot(x_matrix.transpose(), (y_hat - y_vector)))
-                ave_grad = grad / len(minibatch)
-
+                ave_grad = (np.dot(x_matrix.transpose(), (y_hat - y_vector))) / len(minibatch)
 
                 # update weights (and bias)
                 self.theta = self.theta - (eta*ave_grad)
@@ -203,8 +190,7 @@ class LogisticRegression():
             # BEGIN STUDENT CODE
             # get most likely class (recall that P(y=1|x) = y_hat)
 
-            sigma_input = np.dot(documents[name], self.theta)
-            y_hat = sigma(sigma_input)
+            y_hat = sigma(np.dot(documents[name], self.theta))
 
             results[name]['correct'] = classes[name]
             if (y_hat > 0.5):
