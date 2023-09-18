@@ -138,7 +138,7 @@ class LogisticRegression():
         filenames = sorted(filenames)
         n_minibatches = ceil(len(filenames) / batch_size)
         for epoch in range(n_epochs):
-            print("Epoch {:} out of {:}".format(epoch + 1, n_epochs))
+            # print("Epoch {:} out of {:}".format(epoch + 1, n_epochs))
             loss = 0
             # for i in range(5), i would be 0,1,2,3,4
             for i in range(n_minibatches):
@@ -171,7 +171,7 @@ class LogisticRegression():
 
                 # END STUDENT CODE
             loss /= len(filenames)
-            print("Average Train Loss: {}".format(loss))
+            # print("Average Train Loss: {}".format(loss))
             # randomize order
             Random(epoch).shuffle(filenames)
 
@@ -253,8 +253,28 @@ if __name__ == '__main__':
 
     lr = LogisticRegression(n_features=2)
     # make sure these point to the right directories
-    #lr.train('movie_reviews/train', batch_size=3, n_epochs=1, eta=0.1)
     lr.train('movie_reviews/train', batch_size=3, n_epochs=50, eta=1E-1)
     results = lr.test('movie_reviews/dev')
     # results = lr.test('movie_reviews/test')
     lr.evaluate(results)
+
+
+    print("Starting hyperparameter tuning")
+    batch_size_list = [1, 3, 10, 20]
+    n_epoch_list = [10, 50, 200]
+    eta_list = [1E-3, 1E-2, 1E-1]
+
+    for bs in batch_size_list:
+        for ne in n_epoch_list:
+            for e in eta_list:
+                print("Running with batch size: {}, n epochs: {}, eta: {}".format(bs, ne, e))
+                lr = LogisticRegression(n_features=2)
+                lr.train('movie_reviews/train', batch_size=bs, n_epochs=ne, eta=e)
+                results = lr.test('movie_reviews/dev')
+                lr.evaluate(results)
+
+
+
+
+
+
