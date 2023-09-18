@@ -188,10 +188,9 @@ class LogisticRegression():
         for name in filenames:
             # BEGIN STUDENT CODE
             # get most likely class (recall that P(y=1|x) = y_hat)
+            results[name]['correct'] = classes[name]
 
             y_hat = sigma(np.dot(documents[name], self.theta))
-
-            results[name]['correct'] = classes[name]
             if (y_hat > 0.5):
                 results[name]['predicted'] = 1
             else:
@@ -210,13 +209,45 @@ class LogisticRegression():
     def evaluate(self, results):
         # you can copy and paste your code from PA1 here
 
-        count_correct = 0
+        tp_1 = 0
+        tn_1 = 0
+        fp_1 = 0
+        fn_1 = 0
+        
+        tp_0 = 0
+        tn_0 = 0
+        fp_0 = 0
+        fn_0 = 0
+
         for key in results:
-            if results[key]['correct'] == results[key]['predicted']:
-                count_correct += 1
+            if ((results[key]['correct'] == 1) and (results[key]['predicted'] == 1)):
+                tp_1 += 1
+                tn_0 += 1
+            if ((results[key]['correct'] == 0) and (results[key]['predicted'] == 0)):
+                tn_1 += 1
+                tp_0 += 1
+            if ((results[key]['correct'] == 0) and (results[key]['predicted'] == 1)):
+                fp_1 += 1
+                fn_0 += 1
+            if ((results[key]['correct'] == 1) and (results[key]['predicted'] == 0)):
+                fn_1 += 1
+                fp_0 += 1
 
-        print("Percentage correct: {}%".format(100 * (count_correct / len(results))))
+        precision_1 = tp_1 / (tp_1 + fp_1)
+        recall_1 = tp_1 / (tp_1 + fn_1)
+        accuracy_1 = (tp_1 + tn_1) / (tp_1 + tn_1 + fp_1 + fn_1)
+        f1_score_1 = (2*precision_1*recall_1) / (precision_1 + recall_1)
 
+        precision_0 = tp_0 / (tp_0 + fp_0)
+        recall_0 = tp_0 / (tp_0 + fn_0)
+        accuracy_0 = (tp_0 + tn_0) / (tp_0 + tn_0 + fp_0 + fn_0)
+        f1_score_0 = (2*precision_0*recall_0) / (precision_0 + recall_0)
+
+
+        print("Precision 1: {}, Recall 1: {}, F1 Score 1: {}".format(precision_1, recall_1, f1_score_1))
+        print("Accuracy 1: {}%".format(100 * accuracy_1))
+        print("Precision 0: {}, Recall 0: {}, F1 Score 0: {}".format(precision_0, recall_0, f1_score_0))
+        print("Accuracy 0: {}%".format(100 * accuracy_0))
 
 if __name__ == '__main__':
 
