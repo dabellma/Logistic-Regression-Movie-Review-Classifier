@@ -23,6 +23,7 @@ class LogisticRegression():
     def __init__(self, n_features):
         # be sure to use the right class_dict for each data set
         self.class_dict = {'neg': 0, 'pos': 1}
+        # self.class_dict = {'action': 0, 'comedy': 1}
         # use of self.feature_dict is optional for this assignment
         self.feature_dict = {'fast': 0, 'couple': 1, 'shoot': 2, 'fly': 3}
         self.n_features = n_features
@@ -49,7 +50,7 @@ class LogisticRegression():
 
                     c = root.split('/')[-1]
 
-                    # determine which type of dataset you are running
+                    # determine which type of part (train, dev, test) of the dataset you are running
                     forward_slash_index = data_set.find("/")
                     data_set_type = data_set[forward_slash_index + 1:]
 
@@ -73,40 +74,19 @@ class LogisticRegression():
     "dummy feature" with value 1.
     '''
     #some idea features you can use:
-    #count of vowels
-    #count of curse words
     #TODO consider also using feature_dict to get higher than 60.5%
-    #binary word features
     def featurize(self, document):
         vector = np.zeros(self.n_features + 1)
         # BEGIN STUDENT CODE
 
         # vector[0] = len(document)
-        # vector[2] = self.count_periods(document)
         vector[0] = self.count_negative_curse_words(document)
         vector[1] = self.count_positive_words(document)
-        # vector[2] = self.count_exclamation_marks(document)
-
 
         # END STUDENT CODE
         vector[-1] = 1
         return vector
 
-    def count_periods(self, document):
-        count = 0
-        for token in document:
-            if token == '.':
-                count += 1
-
-        return count
-    
-    def count_exclamation_marks(self, document):
-        count = 0
-        for token in document:
-            if token == '!':
-                count += 1
-
-        return count
     
     def count_negative_curse_words(self, document):
         negative_curse_words = ['fuck', 'shit', 'crap', 'bitch', 'damn', 'ass', 'asshole', 'moron', 'bastard', 'bloody', 'bullshit', 'scum', 'whore']
@@ -128,8 +108,6 @@ class LogisticRegression():
         return count
     
 
-
-
     '''
     Trains a logistic regression classifier on a training set.
     '''
@@ -140,7 +118,6 @@ class LogisticRegression():
         for epoch in range(n_epochs):
             # print("Epoch {:} out of {:}".format(epoch + 1, n_epochs))
             loss = 0
-            # for i in range(5), i would be 0,1,2,3,4
             for i in range(n_minibatches):
                 # list of filenames in minibatch
                 minibatch = filenames[i * batch_size: (i + 1) * batch_size]
