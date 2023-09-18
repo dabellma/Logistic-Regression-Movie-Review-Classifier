@@ -185,7 +185,6 @@ class LogisticRegression():
     def test(self, dev_set):
         results = defaultdict(dict)
         filenames, classes, documents = self.load_data(dev_set)
-        count_correct = 0
         for name in filenames:
             # BEGIN STUDENT CODE
             # get most likely class (recall that P(y=1|x) = y_hat)
@@ -198,11 +197,7 @@ class LogisticRegression():
             else:
                 results[name]['predicted'] = 0
 
-
-            if results[name]['correct'] == results[name]['predicted']:
-                count_correct += 1
             # END STUDENT CODE
-        print("Percentage correct: {}%".format(100 * (count_correct / len(filenames))))
 
         return results
 
@@ -214,7 +209,14 @@ class LogisticRegression():
     '''
     def evaluate(self, results):
         # you can copy and paste your code from PA1 here
-        pass
+
+        count_correct = 0
+        for key in results:
+            if results[key]['correct'] == results[key]['predicted']:
+                count_correct += 1
+
+        print("Percentage correct: {}%".format(100 * (count_correct / len(results))))
+
 
 if __name__ == '__main__':
 
