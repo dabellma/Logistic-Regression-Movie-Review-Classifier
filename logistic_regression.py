@@ -8,10 +8,6 @@ from collections import defaultdict
 from math import ceil
 from random import Random
 
-#TODO delete me
-import textblob
-import vaderSentiment
-
 '''
 Computes the logistic function.
 '''
@@ -75,8 +71,7 @@ class LogisticRegression():
     Note that the last element of the vector, corresponding to the bias, is a
     "dummy feature" with value 1.
     '''
-    #some idea features you can use:
-    #TODO consider also using feature_dict to get higher than 60.5%
+
     def featurize(self, document):
         vector = np.zeros(self.n_features + 1)
         # BEGIN STUDENT CODE
@@ -88,13 +83,13 @@ class LogisticRegression():
         return vector
     
     def count_combined_words(self, document):
-        negative_curse_words = ['dumb', 'bad', 'fucking', 'lament', 'trash', 'disappointing', 'asleep', 'sleep', 'lacks', 'boring', 'nothing', 'tired', 'worst']
-        positive_curse_words = ['refreshing', 'insightful', 'enjoyable', 'confident', 'charming', 'laugh', 'fun', 'good', 'enjoy', 'engaging']
+        negative_words = ['dumb', 'bad', 'fucking', 'lament', 'trash', 'disappointing', 'asleep', 'sleep', 'lacks', 'boring', 'nothing', 'tired', 'worst']
+        positive_words = ['refreshing', 'insightful', 'enjoyable', 'confident', 'charming', 'laugh', 'fun', 'good', 'enjoy', 'engaging']
         count = 0
         for token in document:
-            if token in positive_curse_words:
+            if token in positive_words:
                 count += 1
-            if token in negative_curse_words:
+            if token in negative_words:
                 count -= 1
 
         return count
@@ -115,7 +110,6 @@ class LogisticRegression():
                 minibatch = filenames[i * batch_size: (i + 1) * batch_size]
 
                 # BEGIN STUDENT CODE
-
 
                 # create and fill in matrix x and vector y
                 # for my x matrix, it should be len(minibatch) x self.n_features + 1 (a.k.a., (m, F + 1))
@@ -209,24 +203,20 @@ class LogisticRegression():
 
         precision_0 = tp_0 / (tp_0 + fp_0)
         recall_0 = tp_0 / (tp_0 + fn_0)
-        accuracy_0 = (tp_0 + tn_0) / (tp_0 + tn_0 + fp_0 + fn_0)
         f1_score_0 = (2*precision_0*recall_0) / (precision_0 + recall_0)
 
 
         print("Precision 1: {}, Recall 1: {}, F1 Score 1: {}".format(precision_1, recall_1, f1_score_1))
         print("Accuracy 1: {}%".format(100 * accuracy_1))
         print("Precision 0: {}, Recall 0: {}, F1 Score 0: {}".format(precision_0, recall_0, f1_score_0))
-        print("Accuracy 0: {}%".format(100 * accuracy_0))
 
-        return accuracy_0
+        return accuracy_1
 
 if __name__ == '__main__':
 
     lr = LogisticRegression(n_features=1)
-    # make sure these point to the right directories
     lr.train('movie_reviews/train', batch_size=3, n_epochs=50, eta=1E-1)
     results = lr.test('movie_reviews/dev')
-    # results = lr.test('movie_reviews/test')
     lr.evaluate(results)
 
 
@@ -240,6 +230,7 @@ if __name__ == '__main__':
         for ne in n_epoch_list:
             for e in eta_list:
                 print("Running with batch size: {}, n epochs: {}, eta: {}".format(bs, ne, e))
+
                 lr = LogisticRegression(n_features=1)
                 lr.train('movie_reviews/train', batch_size=bs, n_epochs=ne, eta=e)
                 results = lr.test('movie_reviews/dev')
