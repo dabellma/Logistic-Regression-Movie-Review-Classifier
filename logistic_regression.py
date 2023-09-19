@@ -25,7 +25,9 @@ class LogisticRegression():
         self.class_dict = {'neg': 0, 'pos': 1}
         # self.class_dict = {'action': 0, 'comedy': 1}
         # use of self.feature_dict is optional for this assignment
-        self.feature_dict = {'fast': 0, 'couple': 1, 'shoot': 2, 'fly': 3}
+        # self.feature_dict = {'fast': 0, 'couple': 1, 'shoot': 2, 'fly': 3}
+        # self.feature_dict = {'great': 0, 'good': 1, 'amazing': 2, 'fantastic': 3, 'wonderful': 4, 'hilarious': 5, 'enjoyable': 6, 'moving': 7, 'exciting': 8, 'thrilling': 9,
+        #                      'bad': 10, 'boring': 11, 'disappointing': 12, 'terrible': 13, 'awful': 14, 'predictable': 15, 'unoriginal': 16, 'Clichéd': 17, 'overrated': 18, 'confusing': 19}
         self.n_features = n_features
         self.theta = np.zeros(n_features + 1) # weights (and bias)
 
@@ -78,18 +80,38 @@ class LogisticRegression():
     def featurize(self, document):
         vector = np.zeros(self.n_features + 1)
         # BEGIN STUDENT CODE
+        # for word in document:
+        #     if word in self.feature_dict:
+        #         vector[self.feature_dict[word]] += 1
 
-        # vector[0] = len(document)
-        vector[0] = self.count_negative_curse_words(document)
-        vector[1] = self.count_positive_words(document)
+        vector[0] = self.count_combined_words(document)
+        # vector[0] = self.count_negative_curse_words(document)
+        # vector[1] = self.count_positive_words(document)
 
         # END STUDENT CODE
         vector[-1] = 1
         return vector
+    
+    def count_combined_words(self, document):
+        # negative_curse_words = ['dumb', 'bad', 'fucking', 'lament', 'trash', 'disappointing', 'asleep', 'sleep', 'lacks', 'boring', 'nothing', 'tired', 'worst']
+        negative_curse_words = ["bad", "boring", "disappointing", "terrible", "awful", "predictable", "unoriginal", "cliché", "overrated", "confusing",
+                                'fuck', 'shit', 'crap', 'bitch', 'damn', 'ass', 'asshole', 'moron', 'bastard', 'bloody', 'bullshit', 'scum', 'whore']
+        positive_curse_words = ["great", "good", "amazing", "fantastic", "wonderful", "hilarious", "enjoyable", "moving", "exciting", "thrilling",
+                        'cheerful', 'enthusiasm', 'happiness', 'confident', 'charming', 'courageous', 'ambitious', 'affection', 'delightful', 'considerate'
+                        'awesome', 'vivacious', 'adventurous', 'optimism', 'admirable', 'wonderful', 'fabulous', 'lovely', 'compassion']
+        count = 0
+        for token in document:
+            if token in positive_curse_words:
+                count += 1
+            if token in negative_curse_words:
+                count -= 1
 
+        return count
     
     def count_negative_curse_words(self, document):
-        negative_curse_words = ['fuck', 'shit', 'crap', 'bitch', 'damn', 'ass', 'asshole', 'moron', 'bastard', 'bloody', 'bullshit', 'scum', 'whore']
+        # negative_curse_words = ['dumb', 'bad', 'fucking', 'lament', 'trash', 'disappointing', 'asleep', 'sleep', 'lacks', 'boring', 'nothing', 'tired', 'worst']
+        negative_curse_words = ["bad", "boring", "disappointing", "terrible", "awful", "predictable", "unoriginal", "cliché", "overrated", "confusing",
+                                'fuck', 'shit', 'crap', 'bitch', 'damn', 'ass', 'asshole', 'moron', 'bastard', 'bloody', 'bullshit', 'scum', 'whore']
         count = 0
         for token in document:
             if token in negative_curse_words:
@@ -98,7 +120,9 @@ class LogisticRegression():
         return count
     
     def count_positive_words(self, document):
-        positive_curse_words = ['cheerful', 'enthusiasm', 'happiness', 'confident', 'charming', 'courageous', 'ambitious', 'affection', 'delightful', 'considerate'
+        # positive_curse_words = ['refreshing', 'insightful', 'enjoyable', 'confident', 'charming', 'laugh', 'fun', 'good', 'enjoy', 'engaging']
+        positive_curse_words = ["great", "good", "amazing", "fantastic", "wonderful", "hilarious", "enjoyable", "moving", "exciting", "thrilling",
+                                'cheerful', 'enthusiasm', 'happiness', 'confident', 'charming', 'courageous', 'ambitious', 'affection', 'delightful', 'considerate'
                                 'awesome', 'vivacious', 'adventurous', 'optimism', 'admirable', 'wonderful', 'fabulous', 'lovely', 'compassion']
         count = 0
         for token in document:
@@ -226,9 +250,11 @@ class LogisticRegression():
         print("Precision 0: {}, Recall 0: {}, F1 Score 0: {}".format(precision_0, recall_0, f1_score_0))
         print("Accuracy 0: {}%".format(100 * accuracy_0))
 
+        return accuracy_0
+
 if __name__ == '__main__':
 
-    lr = LogisticRegression(n_features=2)
+    lr = LogisticRegression(n_features=1)
     # make sure these point to the right directories
     lr.train('movie_reviews/train', batch_size=3, n_epochs=50, eta=1E-1)
     results = lr.test('movie_reviews/dev')
@@ -241,14 +267,21 @@ if __name__ == '__main__':
     n_epoch_list = [10, 50, 200]
     eta_list = [1E-3, 1E-2, 1E-1]
 
+    all_results = []
     for bs in batch_size_list:
         for ne in n_epoch_list:
             for e in eta_list:
                 print("Running with batch size: {}, n epochs: {}, eta: {}".format(bs, ne, e))
-                lr = LogisticRegression(n_features=2)
+                lr = LogisticRegression(n_features=1)
                 lr.train('movie_reviews/train', batch_size=bs, n_epochs=ne, eta=e)
                 results = lr.test('movie_reviews/dev')
-                lr.evaluate(results)
+                run_result = lr.evaluate(results)
+
+                tuple = (bs, ne, e, run_result)
+                all_results.append(tuple)
+
+    print("hi")
+    
 
 
 
