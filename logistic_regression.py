@@ -22,8 +22,7 @@ class LogisticRegression():
         # self.class_dict = {'action': 0, 'comedy': 1}
         # use of self.feature_dict is optional for this assignment
         # self.feature_dict = {'fast': 0, 'couple': 1, 'shoot': 2, 'fly': 3}
-        # self.feature_dict = {'great': 0, 'good': 1, 'amazing': 2, 'fantastic': 3, 'wonderful': 4, 'hilarious': 5, 'enjoyable': 6, 'moving': 7, 'exciting': 8, 'thrilling': 9,
-        #                      'bad': 10, 'boring': 11, 'disappointing': 12, 'terrible': 13, 'awful': 14, 'predictable': 15, 'unoriginal': 16, 'Clichéd': 17, 'overrated': 18, 'confusing': 19}
+
         self.n_features = n_features
         self.theta = np.zeros(n_features + 1) # weights (and bias)
 
@@ -210,7 +209,6 @@ class LogisticRegression():
         print("Accuracy 1: {}%".format(100 * accuracy_1))
         print("Precision 0: {}, Recall 0: {}, F1 Score 0: {}".format(precision_0, recall_0, f1_score_0))
 
-        return accuracy_1
 
 if __name__ == '__main__':
 
@@ -225,7 +223,6 @@ if __name__ == '__main__':
     n_epoch_list = [10, 50, 200]
     eta_list = [1E-3, 1E-2, 1E-1]
 
-    all_results = []
     for bs in batch_size_list:
         for ne in n_epoch_list:
             for e in eta_list:
@@ -234,16 +231,6 @@ if __name__ == '__main__':
                 lr = LogisticRegression(n_features=1)
                 lr.train('movie_reviews/train', batch_size=bs, n_epochs=ne, eta=e)
                 results = lr.test('movie_reviews/dev')
-                run_result = lr.evaluate(results)
-
-                tuple = (bs, ne, e, run_result)
-                all_results.append(tuple)
-
-    print("hi")
-    
-
-
-
-
+                lr.evaluate(results)
 
 
