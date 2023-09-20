@@ -42,27 +42,21 @@ class LogisticRegression():
                 with open(os.path.join(root, name)) as f:
                     # your code here
                     # BEGIN STUDENT CODE
-
                     filenames.append(name)
 
-                    c = root.split('/')[-1]
 
-                    # determine which type of part (train, dev, test) of the dataset you are running
-                    forward_slash_index = data_set.find("/")
-                    data_set_type = data_set[forward_slash_index + 1:]
+#use this code to split correctly on windows, no other files/folders in the root movie-* folder
 
-                    # sets the positive or negative subfolder as a binary class converted to an integer
-                    if data_set_type == 'train':
-                        classes[name] = self.class_dict[re.findall(r'train\\(.*)', c)[0]]
-                    elif data_set_type == 'dev':
-                        classes[name] = self.class_dict[re.findall(r'dev\\(.*)', c)[0]]
-                    else:
-                        classes[name] = self.class_dict[re.findall(r'test\\(.*)', c)[0]]                    
+                    c = root.split('\\')[-1]
+                    classes[name] = self.class_dict[c]
+
+###########################################
+
 
                     words = f.read().split()
                     documents[name] = self.featurize(words)
-
                     # END STUDENT CODE
+
         return filenames, classes, documents
 
     '''
@@ -206,8 +200,8 @@ class LogisticRegression():
 
 
         print("Precision 1: {}, Recall 1: {}, F1 Score 1: {}".format(precision_1, recall_1, f1_score_1))
-        print("Accuracy 1: {}%".format(100 * accuracy_1))
         print("Precision 0: {}, Recall 0: {}, F1 Score 0: {}".format(precision_0, recall_0, f1_score_0))
+        print("Accuracy: {}%".format(100 * accuracy_1))
 
 
 if __name__ == '__main__':
