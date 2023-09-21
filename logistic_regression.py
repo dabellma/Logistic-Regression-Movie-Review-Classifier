@@ -3,7 +3,6 @@
 
 import os
 import numpy as np
-import re
 from collections import defaultdict
 from math import ceil
 from random import Random
@@ -92,7 +91,7 @@ class LogisticRegression():
         filenames = sorted(filenames)
         n_minibatches = ceil(len(filenames) / batch_size)
         for epoch in range(n_epochs):
-            # print("Epoch {:} out of {:}".format(epoch + 1, n_epochs))
+            print("Epoch {:} out of {:}".format(epoch + 1, n_epochs))
             loss = 0
             for i in range(n_minibatches):
                 # list of filenames in minibatch
@@ -123,7 +122,7 @@ class LogisticRegression():
 
                 # END STUDENT CODE
             loss /= len(filenames)
-            # print("Average Train Loss: {}".format(loss))
+            print("Average Train Loss: {}".format(loss))
             # randomize order
             Random(epoch).shuffle(filenames)
 
@@ -194,10 +193,9 @@ class LogisticRegression():
         recall_0 = tp_0 / (tp_0 + fn_0)
         f1_score_0 = (2*precision_0*recall_0) / (precision_0 + recall_0)
 
-
-        print("Precision 1: {}, Recall 1: {}, F1 Score 1: {}".format(precision_1, recall_1, f1_score_1))
-        print("Precision 0: {}, Recall 0: {}, F1 Score 0: {}".format(precision_0, recall_0, f1_score_0))
-        print("Accuracy: {}%".format(100 * accuracy_1))
+        print("Precision 1: {:.4f}, Recall 1: {:.4f}, F1 Score 1: {:.4f}".format(precision_1, recall_1, f1_score_1))
+        print("Precision 0: {:.4f}, Recall 0: {:.4f}, F1 Score 0: {:.4f}".format(precision_0, recall_0, f1_score_0))
+        print("Accuracy: {:.2f}%".format(100 * accuracy_1))
 
 
 if __name__ == '__main__':
@@ -208,19 +206,19 @@ if __name__ == '__main__':
     lr.evaluate(results)
 
 
-    print("Starting hyperparameter tuning")
-    batch_size_list = [1, 3, 10, 20]
-    n_epoch_list = [10, 50, 200]
-    eta_list = [1E-3, 1E-2, 1E-1]
+    # print("Starting hyperparameter tuning")
+    # batch_size_list = [1, 3, 10, 20]
+    # n_epoch_list = [10, 50, 200]
+    # eta_list = [1E-3, 1E-2, 1E-1]
 
-    for bs in batch_size_list:
-        for ne in n_epoch_list:
-            for e in eta_list:
-                print("Running with batch size: {}, n epochs: {}, eta: {}".format(bs, ne, e))
+    # for bs in batch_size_list:
+    #     for ne in n_epoch_list:
+    #         for e in eta_list:
+    #             print("Running with batch size: {}, n epochs: {}, eta: {}".format(bs, ne, e))
 
-                lr = LogisticRegression(n_features=1)
-                lr.train('movie_reviews/train', batch_size=bs, n_epochs=ne, eta=e)
-                results = lr.test('movie_reviews/dev')
-                lr.evaluate(results)
+    #             lr = LogisticRegression(n_features=1)
+    #             lr.train('movie_reviews/train', batch_size=bs, n_epochs=ne, eta=e)
+    #             results = lr.test('movie_reviews/dev')
+    #             lr.evaluate(results)
 
 
