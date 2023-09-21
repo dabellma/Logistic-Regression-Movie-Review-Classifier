@@ -46,13 +46,8 @@ class LogisticRegression():
                     # BEGIN STUDENT CODE
                     filenames.append(name)
 
-
-#use this code to split correctly on windows, no other files/folders in the root movie-* folder or subfolders except movie_reviews/train/neg for example
                     c = root.replace('\\', '/').split('/')[-1]
                     classes[name] = self.class_dict[c]
-
-###########################################
-
 
                     words = f.read().split()
                     documents[name] = self.featurize(words)
