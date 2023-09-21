@@ -39,6 +39,8 @@ class LogisticRegression():
         # iterate over documents
         for root, dirs, files in os.walk(data_set):
             for name in files:
+                if (name == '.DS_Store'):
+                    continue
                 with open(os.path.join(root, name)) as f:
                     # your code here
                     # BEGIN STUDENT CODE
@@ -46,8 +48,7 @@ class LogisticRegression():
 
 
 #use this code to split correctly on windows, no other files/folders in the root movie-* folder or subfolders except movie_reviews/train/neg for example
-
-                    c = root.split('\\')[-1]
+                    c = root.replace('\\', '/').split('/')[-1]
                     classes[name] = self.class_dict[c]
 
 ###########################################
