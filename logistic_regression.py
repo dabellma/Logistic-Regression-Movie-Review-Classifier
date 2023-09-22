@@ -184,6 +184,11 @@ class LogisticRegression():
                 fn_1 += 1
                 fp_0 += 1
 
+        print("Confusion Matrix")
+        print("\t 0\t1")
+        print("0\t", tn_1, "\t", fn_1)
+        print("1\t", fp_1, "\t", tp_1)
+
         precision_1 = tp_1 / (tp_1 + fp_1)
         recall_1 = tp_1 / (tp_1 + fn_1)
         accuracy_1 = (tp_1 + tn_1) / (tp_1 + tn_1 + fp_1 + fn_1)
